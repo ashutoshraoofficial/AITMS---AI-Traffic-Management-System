@@ -238,29 +238,49 @@ tr:hover td{background:var(--bg-surface-alt)}
   <div class="main-content">
 
     <!-- PAGE: Dashboard (Map + Video Wall) -->
-    <div class="page active" id="page-dashboard">
-      <div class="map-area"><div id="map"></div></div>
-      <div class="video-wall" id="video-wall">
-        <div class="feed-box" onclick="watchCameraStream('GJ-AHM-001', 'SG Highway — Pakwan', 'Home (Police)')" title="Click to Expand">
-          <div class="feed-header"><span>SG Highway — Pakwan</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
-          <img src="/video_feed/GJ-AHM-001" alt="Feed 1">
+    <div class="page active" id="page-dashboard" style="flex-direction: row;">
+      <div class="cctv-area" style="flex: 2; display: flex; flex-direction: column; overflow-y: auto; padding: 12px; background: var(--bg-surface-alt);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3 style="font-size: 14px; font-weight: 700;">Live AI Video Grid</h3>
+          <span style="font-size: 11px; color: var(--text-tertiary);">Powered by NVIDIA TensorRT & Apple MPS</span>
         </div>
-        <div class="feed-box" onclick="watchCameraStream('GJ-AHM-003', 'Income Tax Circle', 'Home (Police)')" title="Click to Expand">
-          <div class="feed-header"><span>Income Tax Circle</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
-          <img src="/video_feed/GJ-AHM-003" alt="Feed 2">
+        <div class="video-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 12px;">
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-001', 'SG Highway — Pakwan', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>SG Highway — Pakwan</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-AHM-001" alt="Feed 1">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-003', 'Income Tax Circle', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>Income Tax Circle</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-AHM-003" alt="Feed 2">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-011', 'Chh-0 Circle, Gandhinagar', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-GNR-011" alt="Feed 3">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-013', 'GIFT City Toll', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>GIFT City Toll</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-GNR-013" alt="Feed 4">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-007', 'Subhash Bridge RTO', 'RTO')" title="Click to Expand">
+            <div class="feed-header"><span>Subhash Bridge RTO</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-AHM-007" alt="Feed 5">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-021', 'Shivranjani Crossroads', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>Shivranjani Crossroads</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-AHM-021" alt="Feed 6">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-044', 'Infocity Gate', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>Infocity Gate</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-GNR-044" alt="Feed 7">
+          </div>
+          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-099', 'Iskcon Flyover', 'Home (Police)')" title="Click to Expand">
+            <div class="feed-header"><span>Iskcon Flyover</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+            <img src="/video_feed/GJ-AHM-099" alt="Feed 8">
+          </div>
         </div>
-        <div class="feed-box" onclick="watchCameraStream('GJ-GNR-011', 'Chh-0 Circle, Gandhinagar', 'Home (Police)')" title="Click to Expand">
-          <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
-          <img src="/video_feed/GJ-GNR-011" alt="Feed 3">
-        </div>
-        <div class="feed-box" onclick="watchCameraStream('GJ-GNR-013', 'GIFT City Toll', 'Home (Police)')" title="Click to Expand">
-          <div class="feed-header"><span>GIFT City Toll</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
-          <img src="/video_feed/GJ-GNR-013" alt="Feed 4">
-        </div>
-        <div class="feed-box" onclick="watchCameraStream('GJ-AHM-007', 'Subhash Bridge RTO', 'RTO')" title="Click to Expand">
-          <div class="feed-header"><span>Subhash Bridge RTO</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
-          <img src="/video_feed/GJ-AHM-007" alt="Feed 5">
-        </div>
+      </div>
+      <div class="map-area" style="flex: 1; min-width: 400px; border-left: 1px solid var(--border);">
+        <div id="map"></div>
       </div>
     </div>
 
