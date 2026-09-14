@@ -261,6 +261,13 @@ async def frame_stream_generator(camera_id: str):
             
     if video_source:
         cap = cv2.VideoCapture(video_source)
+        # Offset the video start so different cameras don't show the exact same synced frames
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total_frames > 50:
+            import hashlib
+            h = int(hashlib.md5(camera_id.encode()).hexdigest(), 16)
+            start_f = h % (total_frames - 30)
+            cap.set(cv2.CAP_PROP_POS_FRAMES, start_f)
         print(f"[STREAM] Camera {camera_id} playing source video: {video_source}")
         
     while True:
