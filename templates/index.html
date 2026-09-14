@@ -159,6 +159,15 @@ tr:hover td{background:var(--bg-surface-alt)}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
+/* ===== CUSTOM LEAFLET ANIMATIONS ===== */
+.animated-route {
+  animation: dash 3s linear infinite;
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
 </style>
 </head>
 
@@ -172,10 +181,11 @@ tr:hover td{background:var(--bg-surface-alt)}
     <span style="font-weight:400;color:var(--text-tertiary);font-size:12px">Gujarat Police Innovation Challenge 2026</span>
   </div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchPage('dashboard')">Dashboard</button>
-    <button class="nav-tab" onclick="switchPage('registry')">Camera Registry</button>
+    <button class="nav-tab active" onclick="switchPage('dashboard')">M2/M4: Dashboard</button>
+    <button class="nav-tab" onclick="switchPage('registry')">M1: Camera Registry</button>
+    <button class="nav-tab" onclick="switchPage('federation')">M3: VMS Federation</button>
     <button class="nav-tab" onclick="switchPage('analytics')">Analytics & Events</button>
-    <button class="nav-tab" onclick="switchPage('watchlist')">Watchlist</button>
+    <button class="nav-tab" onclick="switchPage('watchlist')">Watchlist DB</button>
   </div>
   <div class="controls">
     <span style="font-size:11px;color:var(--text-tertiary)"><span class="status-dot"></span> System Online</span>
@@ -300,6 +310,70 @@ tr:hover td{background:var(--bg-surface-alt)}
           </thead>
           <tbody id="registry-tbody"></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- PAGE: VMS Federation (Model 3) -->
+    <div class="page" id="page-federation" style="padding:16px; overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="font-size:16px;font-weight:700">🔌 VMS Federation & Middleware Architecture (Model 3)</h2>
+        <button class="btn btn-primary btn-sm" onclick="alert('Federation API Sync Triggered!')">🔄 Sync Adapters</button>
+      </div>
+      <p style="font-size:13px; color:var(--text-tertiary); margin-bottom: 20px;">This layer connects to heterogeneous departmental VMS platforms via standard APIs, ONVIF, and RTSP without disrupting their local storage.</p>
+      
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+        <!-- Vendor 1 -->
+        <div class="card" style="padding:16px; border-left: 4px solid var(--blue);">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:8px;">Vendor Adapter: Hikvision VMS</h3>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom: 8px;"><strong>Departments:</strong> Home (Police), RTO</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+            <span>API Status: <span style="color:var(--green);font-weight:600;">● Connected</span></span>
+            <span style="font-family:monospace;">Cameras: 24,500</span>
+          </div>
+          <div style="margin-top:12px; height:6px; background:var(--bg-input); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--green);"></div></div>
+        </div>
+        
+        <!-- Vendor 2 -->
+        <div class="card" style="padding:16px; border-left: 4px solid var(--green);">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:8px;">Vendor Adapter: CP Plus (IndigoVision)</h3>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom: 8px;"><strong>Departments:</strong> Municipal Corp, Food & Civil</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+            <span>API Status: <span style="color:var(--green);font-weight:600;">● Connected</span></span>
+            <span style="font-family:monospace;">Cameras: 18,200</span>
+          </div>
+          <div style="margin-top:12px; height:6px; background:var(--bg-input); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--green);"></div></div>
+        </div>
+
+        <!-- Vendor 3 -->
+        <div class="card" style="padding:16px; border-left: 4px solid var(--yellow);">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:8px;">Vendor Adapter: Dahua SmartPSS</h3>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom: 8px;"><strong>Departments:</strong> Revenue, Ports & Transport</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+            <span>API Status: <span style="color:var(--green);font-weight:600;">● Connected</span></span>
+            <span style="font-family:monospace;">Cameras: 12,050</span>
+          </div>
+          <div style="margin-top:12px; height:6px; background:var(--bg-input); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--green);"></div></div>
+        </div>
+        
+        <!-- Generic ONVIF -->
+        <div class="card" style="padding:16px; border-left: 4px solid var(--red);">
+          <h3 style="font-size:14px; font-weight:700; margin-bottom:8px;">Generic ONVIF Discovery Engine</h3>
+          <div style="font-size:12px; color:var(--text-secondary); margin-bottom: 8px;"><strong>Departments:</strong> Various Independent Sites</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
+            <span>Protocol Status: <span style="color:var(--green);font-weight:600;">● Active</span></span>
+            <span style="font-family:monospace;">Cameras: 25,250</span>
+          </div>
+          <div style="margin-top:12px; height:6px; background:var(--bg-input); border-radius:3px; overflow:hidden;"><div style="height:100%; width:100%; background:var(--green);"></div></div>
+        </div>
+      </div>
+      
+      <h3 style="font-size:14px; font-weight:700; margin-top:24px; margin-bottom:12px;">Unified Event Bus (Apache Kafka Simulation)</h3>
+      <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius); padding: 12px; font-family: monospace; font-size: 11px; height: 200px; overflow-y: auto;">
+        <div style="color:var(--green); margin-bottom: 6px;">> [Kafka Consumer] Connected to topic 'vms-federated-events'</div>
+        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"ANPR", "camera":"CP-MC-44", "plate":"GJ01DX5432", "ts":"2026-09-15T12:01:00Z"} -> Correlated with Home Dept Database</div>
+        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"Intrusion", "camera":"HIK-FC-12", "zone":"Godown-A", "ts":"2026-09-15T12:01:45Z"}</div>
+        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"ANPR", "camera":"DAH-RTO-01", "plate":"GJ27CD5555", "ts":"2026-09-15T12:02:10Z"} -> Correlated with VAHAN Database</div>
+        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Polling 26 connected VMS databases... OK (14ms latency)</div>
       </div>
     </div>
 
@@ -524,43 +598,67 @@ function filterDept(el, dept){
 async function traceVehicle(){
   const plate = document.getElementById('plate-input').value.trim();
   if(!plate) return;
-  const res = await fetch(`/api/route/${plate}`);
-  const d = await res.json();
-  if(routePolyline) map.removeLayer(routePolyline);
-  routeMarkers.forEach(m=>map.removeLayer(m));
-  routeMarkers = [];
+  
+  // Show loading state
   const timeline = document.getElementById('route-timeline');
-  if(!d.route||d.route.length===0){
-    timeline.innerHTML='<div style="font-size:12px;color:var(--text-tertiary);padding:8px">No sightings found for '+plate+'</div>';
-    return;
-  }
-  const latlngs = [];
-  let html = '';
-  d.route.forEach((s,i)=>{
-    latlngs.push([s.lat, s.lon]);
-    const m = L.circleMarker([s.lat,s.lon],{radius:8,fillColor:'#ef4444',color:'#fff',weight:2,fillOpacity:0.9}).addTo(map);
-    m.bindPopup(`<b>Waypoint #${i+1}</b><br>${s.name}<br>${new Date(s.timestamp).toLocaleString()}<br>Confidence: ${(s.confidence*100).toFixed(1)}%`);
-    if(i===d.route.length-1) m.openPopup();
-    routeMarkers.push(m);
-    html += `<div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-body">
-        <div class="loc">${i+1}. ${s.name}</div>
-        <div class="time">${new Date(s.timestamp).toLocaleString()}</div>
-        <div class="conf">Confidence: ${(s.confidence*100).toFixed(1)}%</div>
-      </div>
-    </div>`;
-  });
-  timeline.innerHTML = html;
-  routePolyline = L.polyline(latlngs,{color:'#ef4444',weight:3,dashArray:'8,6',opacity:0.85}).addTo(map);
-  map.fitBounds(routePolyline.getBounds(),{padding:[60,60]});
-  // Switch to dashboard if not already
-  if(!document.getElementById('page-dashboard').classList.contains('active')){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-    document.getElementById('page-dashboard').classList.add('active');
-    document.querySelector('.nav-tab').classList.add('active');
-    setTimeout(()=>map.invalidateSize(),100);
+  timeline.innerHTML = '<div style="padding:16px; text-align:center;"><span class="status-dot"></span> Querying State Database...</div>';
+  
+  try {
+    const res = await fetch(`/api/route/${plate}`);
+    const d = await res.json();
+    
+    if(routePolyline) map.removeLayer(routePolyline);
+    routeMarkers.forEach(m=>map.removeLayer(m));
+    routeMarkers = [];
+    
+    if(!d.route||d.route.length===0){
+      timeline.innerHTML='<div style="font-size:13px;color:#ef4444;padding:12px;background:var(--bg-input);border-radius:4px;margin:8px;">❌ No sightings found for plate <b>'+plate+'</b> in the last 72 hours.</div>';
+      return;
+    }
+    
+    const latlngs = [];
+    let html = `<div style="font-size:12px; font-weight:600; padding:8px 8px 0; color:var(--text-secondary);">Target: <span style="color:#fff;background:var(--accent);padding:2px 6px;border-radius:4px;">${plate}</span> - ${d.route.length} Waypoints</div>`;
+    
+    d.route.forEach((s,i)=>{
+      latlngs.push([s.lat, s.lon]);
+      // Enhanced Marker
+      const m = L.circleMarker([s.lat,s.lon],{radius: i===0?10:i===d.route.length-1?12:6, fillColor: i===d.route.length-1?'#10b981':'#ef4444', color:'#fff', weight:2, fillOpacity:0.9}).addTo(map);
+      
+      const timeStr = new Date(s.timestamp).toLocaleString();
+      m.bindPopup(`<div style="font-family:Inter,sans-serif;">
+        <div style="font-size:10px; font-weight:700; color:var(--text-tertiary); text-transform:uppercase;">Waypoint #${i+1} ${i===d.route.length-1?'(LATEST)':''}</div>
+        <b style="font-size:14px;">${s.name}</b><br>
+        <div style="font-size:12px; margin-top:4px;">🕒 ${timeStr}</div>
+        <div style="font-size:12px; color:var(--green);">🎯 AI Confidence: ${(s.confidence*100).toFixed(1)}%</div>
+        <button class="btn btn-primary btn-sm btn-block" style="margin-top:8px;" onclick="watchCameraStream('${s.camera_id}', '${s.name.replace(/'/g, "\\'")}', 'Police')">▶ View Junction Feed</button>
+      </div>`);
+      
+      if(i===d.route.length-1) setTimeout(()=>m.openPopup(), 600); // Auto-open latest
+      routeMarkers.push(m);
+      
+      html += `<div class="timeline-item" style="cursor:pointer;" onclick="map.setView([${s.lat}, ${s.lon}], 14); routeMarkers[${i}].openPopup();">
+        <div class="timeline-dot" style="background:${i===d.route.length-1?'#10b981':'#ef4444'}"></div>
+        <div class="timeline-body" style="padding: 10px; background:var(--bg-input); border-radius:6px; margin-bottom:8px; border-left:3px solid ${i===d.route.length-1?'#10b981':'#ef4444'};">
+          <div class="loc" style="font-weight:600; font-size:13px;">${i+1}. ${s.name}</div>
+          <div class="time" style="font-size:11px; color:var(--text-tertiary); margin-top:4px;">${timeStr}</div>
+        </div>
+      </div>`;
+    });
+    
+    timeline.innerHTML = html;
+    
+    // Animate Polyline
+    routePolyline = L.polyline(latlngs,{color:'#ef4444', weight:4, dashArray:'10,10', opacity:0.8, className: 'animated-route'}).addTo(map);
+    
+    // Fit bounds with animation
+    map.flyToBounds(routePolyline.getBounds(), {padding: [80, 80], duration: 1.5});
+    
+    // Ensure dashboard is active
+    if(!document.getElementById('page-dashboard').classList.contains('active')){
+      switchPage('dashboard');
+    }
+  } catch(e) {
+    timeline.innerHTML = '<div style="color:#ef4444;padding:8px">Error tracing vehicle route.</div>';
   }
 }
 function quickTrace(p){document.getElementById('plate-input').value=p;traceVehicle();}
