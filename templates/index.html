@@ -368,11 +368,8 @@ tr:hover td{background:var(--bg-surface-alt)}
       </div>
       
       <h3 style="font-size:14px; font-weight:700; margin-top:24px; margin-bottom:12px;">Unified Event Bus (Apache Kafka Simulation)</h3>
-      <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius); padding: 12px; font-family: monospace; font-size: 11px; height: 200px; overflow-y: auto;">
+      <div id="kafka-log-container" class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius); padding: 12px; font-family: monospace; font-size: 11px; height: 200px; overflow-y: auto;">
         <div style="color:var(--green); margin-bottom: 6px;">> [Kafka Consumer] Connected to topic 'vms-federated-events'</div>
-        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"ANPR", "camera":"CP-MC-44", "plate":"GJ01DX5432", "ts":"2026-09-15T12:01:00Z"} -> Correlated with Home Dept Database</div>
-        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"Intrusion", "camera":"HIK-FC-12", "zone":"Godown-A", "ts":"2026-09-15T12:01:45Z"}</div>
-        <div style="color:var(--text-secondary); margin-bottom: 6px;">> Received: {"event":"ANPR", "camera":"DAH-RTO-01", "plate":"GJ27CD5555", "ts":"2026-09-15T12:02:10Z"} -> Correlated with VAHAN Database</div>
         <div style="color:var(--text-secondary); margin-bottom: 6px;">> Polling 26 connected VMS databases... OK (14ms latency)</div>
       </div>
     </div>
@@ -675,6 +672,34 @@ function closeCameraModal(){
   closeModal('watch-camera-modal');
 }
 
+function startFederationSimulation() {
+  const container = document.getElementById('kafka-log-container');
+  if(!container) return;
+  const vendors = ['HIK-FC', 'CP-MC', 'DAH-RTO', 'ONVIF-PUB'];
+  const events = ['ANPR', 'Intrusion', 'Crowd Density', 'Speed Violation', 'Wrong Way'];
+  
+  setInterval(() => {
+    if(!document.getElementById('page-federation').classList.contains('active')) return;
+    const v = vendors[Math.floor(Math.random()*vendors.length)] + '-' + Math.floor(Math.random()*99);
+    const e = events[Math.floor(Math.random()*events.length)];
+    const ts = new Date().toISOString();
+    const div = document.createElement('div');
+    div.style.color = 'var(--text-secondary)';
+    div.style.marginBottom = '6px';
+    
+    if(e === 'ANPR') {
+      const plate = `GJ${Math.floor(Math.random()*27).toString().padStart(2,'0')}${String.fromCharCode(65+Math.random()*26)}${String.fromCharCode(65+Math.random()*26)}${Math.floor(1000+Math.random()*8999)}`;
+      div.innerHTML = `> Received: {"event":"${e}", "camera":"${v}", "plate":"${plate}", "ts":"${ts}"} <span style="color:var(--green)">-> Correlated with State DB</span>`;
+    } else {
+      div.innerHTML = `> Received: {"event":"${e}", "camera":"${v}", "ts":"${ts}"}`;
+    }
+    
+    container.appendChild(div);
+    if(container.children.length > 50) container.removeChild(container.firstChild);
+    container.scrollTop = container.scrollHeight;
+  }, 1200);
+}
+
 // ===== REGISTRY TABLE =====
 async function loadRegistry(){
   const res = await fetch('/api/cameras');
@@ -778,7 +803,8 @@ ws.onmessage = function(e){
 // ===== INIT =====
 loadStats();
 loadCameras();
-setTimeout(()=>traceVehicle(), 800);
+startFederationSimulation();
+setTimeout(() => quickTrace('GJ01DX5432'), 800);
 setInterval(loadStats, 15000);
 </script>
 </body>
