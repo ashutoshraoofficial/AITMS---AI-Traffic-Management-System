@@ -65,8 +65,8 @@ a{color:var(--accent);text-decoration:none}
 .sidebar{width:340px;min-width:340px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background var(--transition)}
 .sidebar-scroll{overflow-y:auto;flex:1;padding:14px}
 .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.map-area{flex:1;position:relative}
-#map{width:100%;height:100%}
+.map-area{flex:1;position:relative; height: 100%; min-height: 500px;}
+#map{position:absolute; top:0; left:0; right:0; bottom:0;}
 .video-wall{height:340px;background:var(--bg-surface-alt);border-top:1px solid var(--border);display:flex;gap:8px;padding:8px;overflow-x:auto;flex-shrink:0}
 
 /* ===== PAGE SECTIONS (switchable) ===== */
@@ -804,7 +804,10 @@ ws.onmessage = function(e){
 loadStats();
 loadCameras();
 startFederationSimulation();
-setTimeout(() => quickTrace('GJ01DX5432'), 800);
+setTimeout(() => {
+  map.invalidateSize();
+  quickTrace('GJ01DX5432');
+}, 800);
 setInterval(loadStats, 15000);
 </script>
 </body>
