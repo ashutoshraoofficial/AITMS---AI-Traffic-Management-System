@@ -258,9 +258,17 @@ async def frame_stream_generator(camera_id: str):
     
     video_source = None
     if unique_videos:
-        import hashlib
-        h_vid = int(hashlib.md5(camera_id.encode()).hexdigest(), 16)
-        video_source = unique_videos[h_vid % len(unique_videos)]
+        # Use a global dictionary to ensure absolutely no collisions across cameras
+        global assigned_videos, assigned_video_idx
+        if 'assigned_videos' not in globals():
+            assigned_videos = {}
+            assigned_video_idx = 0
+            
+        if camera_id not in assigned_videos:
+            assigned_videos[camera_id] = unique_videos[assigned_video_idx % len(unique_videos)]
+            assigned_video_idx += 1
+            
+        video_source = assigned_videos[camera_id]
             
     if video_source:
         cap = cv2.VideoCapture(video_source)
