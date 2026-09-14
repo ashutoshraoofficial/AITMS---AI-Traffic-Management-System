@@ -253,11 +253,14 @@ async def frame_stream_generator(camera_id: str):
         "Licence Plate Camera Illustration Video - Unik CCTV (1080p, h264).mp4"
     ] + glob.glob("*.mp4") + glob.glob("Sample Videos/*.mp4")
     
+    existing_videos = [vc for vc in video_candidates if os.path.exists(vc)]
+    unique_videos = list(dict.fromkeys(existing_videos))
+    
     video_source = None
-    for vc in video_candidates:
-        if os.path.exists(vc):
-            video_source = vc
-            break
+    if unique_videos:
+        import hashlib
+        h_vid = int(hashlib.md5(camera_id.encode()).hexdigest(), 16)
+        video_source = unique_videos[h_vid % len(unique_videos)]
             
     if video_source:
         cap = cv2.VideoCapture(video_source)
