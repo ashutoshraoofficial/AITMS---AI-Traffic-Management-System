@@ -244,15 +244,34 @@ async def websocket_endpoint(websocket: WebSocket):
             connected_websockets.remove(websocket)
 
 async def frame_stream_generator(camera_id: str):
+    import glob
     cap = None
-    if os.path.exists("sample_traffic.mp4"):
-        cap = cv2.VideoCapture("sample_traffic.mp4")
+    
+    # Priority search for video files
+    video_candidates = [
+        "Licence Plate Camera Illustration Video - Unik CCTV (1080p, h264).mp4",
+        "sample_traffic.mp4"
+    ] + glob.glob("*.mp4")
+    
+    video_source = None
+    for vc in video_candidates:
+        if os.path.exists(vc):
+            video_source = vc
+            break
+            
+    if video_source:
+        cap = cv2.VideoCapture(video_source)
+        print(f"[STREAM] Camera {camera_id} playing source video: {video_source}")
+        
     while True:
         frame = None
         if cap and cap.isOpened():
             ok, f = cap.read()
             if ok:
                 frame = f
+                # Resize if high-res (e.g. 1080p) to 960x540 for high FPS web streaming
+                if frame.shape[1] > 960:
+                    frame = cv2.resize(frame, (960, 540))
             else:
                 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
         if frame is None:
@@ -261,16 +280,17 @@ async def frame_stream_generator(camera_id: str):
             cv2.line(frame, (320, 240), (100, 480), (150, 150, 150), 2)
             cv2.line(frame, (320, 240), (540, 480), (150, 150, 150), 2)
             cv2.line(frame, (320, 240), (320, 480), (255, 255, 255), 2)
+            
         processed, detections = ai_engine.process_frame(frame, camera_id)
         for det in detections:
             alert = log_event(det['plate'], camera_id, det['conf'])
             if alert and main_loop:
                 asyncio.run_coroutine_threadsafe(broadcast_alert(alert), main_loop)
-        ret, buf = cv2.imencode('.jpg', processed, [cv2.IMWRITE_JPEG_QUALITY, 75])
+        ret, buf = cv2.imencode('.jpg', processed, [cv2.IMWRITE_JPEG_QUALITY, 80])
         if ret:
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + buf.tobytes() + b'\r\n')
-        await asyncio.sleep(0.04)
+        await asyncio.sleep(0.035)
 
 @app.get("/video_feed/{camera_id}")
 async def video_feed(camera_id: str):
