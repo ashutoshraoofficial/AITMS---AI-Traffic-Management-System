@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SENTINEL — Gujarat Police Integrated Video Management & Analytics Platform</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ===== CSS CUSTOM PROPERTIES (THEME SYSTEM) ===== */
+:root {
+  --radius: 8px;
+  --transition: 0.25s ease;
+  --font: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+[data-theme="light"] {
+  --bg-body: #f0f2f5; --bg-surface: #ffffff; --bg-surface-alt: #f8f9fa;
+  --bg-input: #f0f2f5; --bg-sidebar: #ffffff; --bg-header: #ffffff;
+  --border: #e2e5e9; --border-focus: #2563eb;
+  --text-primary: #111827; --text-secondary: #6b7280; --text-tertiary: #9ca3af;
+  --accent: #2563eb; --accent-hover: #1d4ed8; --accent-light: #eff6ff;
+  --green: #059669; --green-bg: #ecfdf5; --red: #dc2626; --red-bg: #fef2f2;
+  --yellow: #d97706; --yellow-bg: #fffbeb; --orange: #ea580c;
+  --badge-police: #2563eb; --badge-rto: #d97706; --badge-muni: #059669;
+  --badge-civil: #7c3aed; --badge-pvt: #6b7280;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --map-tiles: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+}
+[data-theme="dark"] {
+  --bg-body: #0f1117; --bg-surface: #1a1d27; --bg-surface-alt: #22252f;
+  --bg-input: #22252f; --bg-sidebar: #14161e; --bg-header: #14161e;
+  --border: #2a2d3a; --border-focus: #3b82f6;
+  --text-primary: #e5e7eb; --text-secondary: #9ca3af; --text-tertiary: #6b7280;
+  --accent: #3b82f6; --accent-hover: #2563eb; --accent-light: #1e293b;
+  --green: #34d399; --green-bg: #064e3b; --red: #f87171; --red-bg: #450a0a;
+  --yellow: #fbbf24; --yellow-bg: #451a03; --orange: #fb923c;
+  --badge-police: #3b82f6; --badge-rto: #fbbf24; --badge-muni: #34d399;
+  --badge-civil: #a78bfa; --badge-pvt: #6b7280;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --map-tiles: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+}
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg-body);color:var(--text-primary);height:100vh;display:flex;flex-direction:column;overflow:hidden;transition:background var(--transition),color var(--transition)}
+a{color:var(--accent);text-decoration:none}
+
+/* ===== TOP HEADER BAR ===== */
+.top-bar{background:var(--bg-header);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:999}
+.top-bar .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.top-bar .brand img{height:28px}
+.top-bar .brand span{color:var(--accent)}
+.top-bar .nav-tabs{display:flex;gap:2px;background:var(--bg-surface-alt);border-radius:6px;padding:3px}
+.top-bar .nav-tab{padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-secondary);transition:all var(--transition);border:none;background:transparent}
+.top-bar .nav-tab.active{background:var(--accent);color:#fff}
+.top-bar .nav-tab:hover:not(.active){background:var(--bg-input)}
+.top-bar .controls{display:flex;align-items:center;gap:12px}
+.theme-toggle{background:var(--bg-input);border:1px solid var(--border);border-radius:20px;width:42px;height:24px;cursor:pointer;position:relative;transition:all var(--transition)}
+.theme-toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--accent);transition:transform var(--transition)}
+[data-theme="dark"] .theme-toggle::after{transform:translateX(18px)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* ===== MAIN LAYOUT ===== */
+.app-body{display:flex;flex:1;overflow:hidden}
+.sidebar{width:340px;min-width:340px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background var(--transition)}
+.sidebar-scroll{overflow-y:auto;flex:1;padding:14px}
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.map-area{flex:1;position:relative}
+#map{width:100%;height:100%}
+.video-wall{height:230px;background:var(--bg-surface-alt);border-top:1px solid var(--border);display:flex;gap:8px;padding:8px;overflow-x:auto;flex-shrink:0}
+
+/* ===== PAGE SECTIONS (switchable) ===== */
+.page{display:none;flex:1;flex-direction:column;overflow:hidden}
+.page.active{display:flex}
+
+/* ===== CARD ===== */
+.card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow-sm)}
+.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-tertiary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* ===== STAT CARDS ===== */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center}
+.stat-card .value{font-size:22px;font-weight:800;color:var(--accent)}
+.stat-card .label{font-size:10px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+.stat-card.alert .value{color:var(--red)}
+
+/* ===== FORM CONTROLS ===== */
+.input{width:100%;padding:9px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-size:13px;font-family:var(--font);transition:border var(--transition);outline:none}
+.input:focus{border-color:var(--border-focus)}
+.input::placeholder{color:var(--text-tertiary)}
+.btn{padding:8px 16px;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;transition:all var(--transition);font-family:var(--font)}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-input)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-block{width:100%;text-align:center}
+.btn-sm{padding:5px 10px;font-size:11px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+
+/* ===== PILLS / BADGES ===== */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:0.3px}
+.badge-police{background:var(--badge-police);color:#fff}
+.badge-rto{background:var(--badge-rto);color:#000}
+.badge-muni{background:var(--badge-muni);color:#fff}
+.badge-civil{background:var(--badge-civil);color:#fff}
+.badge-pvt{background:var(--badge-pvt);color:#fff}
+.badge-online{background:var(--green-bg);color:var(--green);border:1px solid var(--green)}
+.badge-alert{background:var(--red-bg);color:var(--red)}
+.dept-filter{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.dept-pill{font-size:10px;padding:4px 8px;border-radius:4px;background:var(--bg-input);color:var(--text-secondary);cursor:pointer;border:1px solid var(--border);font-weight:600;transition:all var(--transition)}
+.dept-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ===== ALERT ITEMS ===== */
+.alert-item{padding:10px 12px;border-radius:6px;margin-bottom:8px;border-left:4px solid var(--red);background:var(--red-bg);animation:slideDown 0.3s ease}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.alert-item .top{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--red);margin-bottom:3px}
+.alert-item .desc{font-size:11px;color:var(--text-secondary);margin-bottom:3px}
+.alert-item .meta{font-size:10px;color:var(--text-tertiary);display:flex;justify-content:space-between}
+
+/* ===== VIDEO FEED BOXES ===== */
+.feed-box{min-width:300px;width:300px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.feed-box .feed-header{background:var(--bg-surface-alt);padding:6px 10px;font-size:10px;font-weight:700;color:var(--text-secondary);display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
+.feed-box .feed-header .live{color:var(--green)}
+.feed-box img{width:100%;flex:1;object-fit:cover;background:#000;min-height:0}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-tertiary);border-bottom:2px solid var(--border);position:sticky;top:0;background:var(--bg-surface)}
+td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text-secondary);vertical-align:middle}
+tr:hover td{background:var(--bg-surface-alt)}
+
+/* ===== MODAL ===== */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:440px;max-width:90vw;box-shadow:var(--shadow-md)}
+.modal h3{font-size:16px;margin-bottom:16px;font-weight:700}
+.modal label{font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin:10px 0 4px}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* ===== ROUTE TIMELINE ===== */
+.timeline{margin-top:8px}
+.timeline-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border-bottom:none}
+.timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--red);margin-top:4px;flex-shrink:0}
+.timeline-body .loc{font-size:12px;font-weight:600;color:var(--text-primary)}
+.timeline-body .time{font-size:11px;color:var(--text-tertiary)}
+.timeline-body .conf{font-size:10px;color:var(--accent)}
+
+/* ===== LEAFLET OVERRIDES ===== */
+.leaflet-popup-content-wrapper{background:var(--bg-surface);color:var(--text-primary);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-md);font-family:var(--font)}
+.leaflet-popup-tip{background:var(--bg-surface)}
+.leaflet-popup-content{font-size:12px;line-height:1.5;margin:10px 14px}
+.leaflet-control-zoom a{background:var(--bg-surface)!important;color:var(--text-primary)!important;border-color:var(--border)!important}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
+</style>
+</head>
+
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="top-bar">
+  <div class="brand">
+    <span>🛡️</span>
+    <span>SENTINEL</span>
+    <span style="font-weight:400;color:var(--text-tertiary);font-size:12px">Gujarat Police Innovation Challenge 2026</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchPage('dashboard')">Dashboard</button>
+    <button class="nav-tab" onclick="switchPage('registry')">Camera Registry</button>
+    <button class="nav-tab" onclick="switchPage('analytics')">Analytics & Events</button>
+    <button class="nav-tab" onclick="switchPage('watchlist')">Watchlist</button>
+  </div>
+  <div class="controls">
+    <span style="font-size:11px;color:var(--text-tertiary)"><span class="status-dot"></span> System Online</span>
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode"></div>
+  </div>
+</div>
+
+<!-- ===== APP BODY ===== -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-scroll">
+
+      <!-- Stats Overview -->
+      <div class="stat-row" id="stats-row">
+        <div class="stat-card"><div class="value" id="stat-cams">0</div><div class="label">Cameras</div></div>
+        <div class="stat-card"><div class="value" id="stat-online">0</div><div class="label">Online</div></div>
+        <div class="stat-card"><div class="value" id="stat-detections">0</div><div class="label">Detections</div></div>
+        <div class="stat-card alert"><div class="value" id="stat-alerts">0</div><div class="label">Watchlist Hits</div></div>
+      </div>
+
+      <!-- Vehicle Route Trace -->
+      <div class="card">
+        <div class="card-title">🔍 Vehicle Trajectory Tracer</div>
+        <div class="row" style="margin-bottom:8px">
+          <input class="input" id="plate-input" placeholder="e.g. GJ01DX5432" value="GJ01DX5432">
+          <button class="btn btn-primary" onclick="traceVehicle()" style="flex:0 0 auto">Trace</button>
+        </div>
+        <button class="btn btn-success btn-block btn-sm" onclick="location.href='/api/export_csv'">📥 Download Evaluation CSV</button>
+        <div class="card-title" style="margin-top:12px">Quick Lookup</div>
+        <div class="dept-filter">
+          <span class="dept-pill" onclick="quickTrace('GJ01DX5432')">GJ01DX5432</span>
+          <span class="dept-pill" onclick="quickTrace('GJ01AB1234')">GJ01AB1234</span>
+          <span class="dept-pill" onclick="quickTrace('GJ05XX9999')">GJ05XX9999</span>
+          <span class="dept-pill" onclick="quickTrace('GJ27CD5555')">GJ27CD5555</span>
+        </div>
+        <div id="route-timeline" class="timeline"></div>
+      </div>
+
+      <!-- Department Filter -->
+      <div class="card">
+        <div class="card-title">🏛️ Department Filter</div>
+        <div class="dept-filter" id="dept-filters"></div>
+      </div>
+
+      <!-- Live Alerts -->
+      <div class="card" style="flex:1">
+        <div class="card-title" style="justify-content:space-between">
+          <span>🚨 Real-Time Watchlist Alerts</span>
+          <span class="badge badge-alert" id="alert-badge">LIVE</span>
+        </div>
+        <div id="alerts-box" style="max-height:280px;overflow-y:auto"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- PAGE: Dashboard (Map + Video Wall) -->
+    <div class="page active" id="page-dashboard">
+      <div class="map-area"><div id="map"></div></div>
+      <div class="video-wall" id="video-wall">
+        <div class="feed-box">
+          <div class="feed-header"><span>SG Highway — Pakwan</span><span class="live">● LIVE</span></div>
+          <img src="/video_feed/GJ-AHM-001" alt="Feed 1">
+        </div>
+        <div class="feed-box">
+          <div class="feed-header"><span>Income Tax Circle</span><span class="live">● LIVE</span></div>
+          <img src="/video_feed/GJ-AHM-003" alt="Feed 2">
+        </div>
+        <div class="feed-box">
+          <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><span class="live">● LIVE</span></div>
+          <img src="/video_feed/GJ-GNR-011" alt="Feed 3">
+        </div>
+        <div class="feed-box">
+          <div class="feed-header"><span>GIFT City Toll</span><span class="live">● LIVE</span></div>
+          <img src="/video_feed/GJ-GNR-013" alt="Feed 4">
+        </div>
+        <div class="feed-box">
+          <div class="feed-header"><span>Subhash Bridge RTO</span><span class="live">● LIVE</span></div>
+          <img src="/video_feed/GJ-AHM-007" alt="Feed 5">
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: Camera Registry -->
+    <div class="page" id="page-registry" style="padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="font-size:16px;font-weight:700">📹 Camera Registry & GIS Metadata</h2>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="registry-search" placeholder="Search cameras..." style="width:220px" oninput="filterRegistry()">
+          <button class="btn btn-primary btn-sm" onclick="openModal('add-camera-modal')">+ Add Camera</button>
+        </div>
+      </div>
+      <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)">
+        <table>
+          <thead>
+            <tr><th>Camera ID</th><th>Location</th><th>Department</th><th>Type</th><th>Vendor</th><th>Storage</th><th>Retention</th><th>Coordinates</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody id="registry-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: Analytics & Events -->
+    <div class="page" id="page-analytics" style="padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="font-size:16px;font-weight:700">📊 ANPR Detections & Event Log</h2>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="event-plate-search" placeholder="Filter by plate..." style="width:180px">
+          <button class="btn btn-primary btn-sm" onclick="loadEvents()">Search</button>
+          <button class="btn btn-outline btn-sm" onclick="loadEvents()">Refresh</button>
+        </div>
+      </div>
+      <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)">
+        <table>
+          <thead>
+            <tr><th>Timestamp</th><th>Plate Number</th><th>Camera</th><th>Location</th><th>Confidence</th><th>Watchlist</th><th>Reason</th></tr>
+          </thead>
+          <tbody id="events-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: Watchlist -->
+    <div class="page" id="page-watchlist" style="padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="font-size:16px;font-weight:700">🔐 eGujCop / VAHAN Watchlist Database</h2>
+        <button class="btn btn-danger btn-sm" onclick="openModal('add-watchlist-modal')">+ Add to Watchlist</button>
+      </div>
+      <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)">
+        <table>
+          <thead><tr><th>Plate Number</th><th>Reason / FIR Details</th><th>Severity</th></tr></thead>
+          <tbody id="watchlist-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: Add Camera ===== -->
+<div class="modal-backdrop" id="add-camera-modal">
+  <div class="modal">
+    <h3>Onboard New Camera</h3>
+    <label>Camera ID</label><input class="input" id="cam-id" placeholder="e.g. GJ-AHM-051">
+    <label>Location Name</label><input class="input" id="cam-name" placeholder="e.g. Satellite Road Junction">
+    <label>Department</label>
+    <select class="input" id="cam-dept">
+      <option>Home (Police)</option><option>RTO</option><option>Municipal Corp</option>
+      <option>Food & Civil Supplies</option><option>Private (Commercial)</option>
+    </select>
+    <div class="row">
+      <div><label>Latitude</label><input class="input" id="cam-lat" placeholder="23.0489"></div>
+      <div><label>Longitude</label><input class="input" id="cam-lon" placeholder="72.5085"></div>
+    </div>
+    <label>RTSP URL</label><input class="input" id="cam-rtsp" placeholder="rtsp://...">
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('add-camera-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addCamera()">Onboard Camera</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Add Watchlist ===== -->
+<div class="modal-backdrop" id="add-watchlist-modal">
+  <div class="modal">
+    <h3>Add Vehicle to Watchlist</h3>
+    <label>Vehicle Registration Number</label><input class="input" id="wl-plate" placeholder="e.g. GJ01XX9999">
+    <label>Reason / FIR Details</label><input class="input" id="wl-reason" placeholder="e.g. Stolen Vehicle FIR #201/2026">
+    <label>Severity</label>
+    <select class="input" id="wl-severity"><option>CRITICAL</option><option>HIGH</option><option>LOW</option></select>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('add-watchlist-modal')">Cancel</button>
+<!-- ===== MODAL: Live Camera Feed ===== -->
+<div class="modal-backdrop" id="watch-camera-modal">
+  <div class="modal" style="width:720px;max-width:95vw">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div>
+        <h3 id="modal-cam-name" style="margin:0;font-size:15px">Camera Feed</h3>
+        <span id="modal-cam-meta" style="font-size:11px;color:var(--text-tertiary)"></span>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="closeCameraModal()">✕ Close</button>
+    </div>
+    <div style="background:#000;border-radius:8px;overflow:hidden;position:relative;height:380px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)">
+      <img id="modal-cam-img" src="" style="width:100%;height:100%;object-fit:cover" alt="Live Camera Stream">
+      <div style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.75);padding:4px 8px;border-radius:4px;font-size:11px;color:#22c55e;font-weight:700">
+        ● LIVE &bull; 30 FPS &bull; RTSP/TCP &bull; M4 MPS
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== THEME MANAGEMENT =====
+function getTheme(){ return document.documentElement.getAttribute('data-theme') }
+function toggleTheme(){
+  const next = getTheme()==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('sentinel-theme', next);
+  updateMapTiles();
+}
+(function(){
+  const saved = localStorage.getItem('sentinel-theme');
+  if(saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+// ===== MAP (Standard OpenStreetMap) =====
+const map = L.map('map').setView([22.6, 71.8], 7);
+let tileLayer;
+function updateMapTiles(){
+  if(tileLayer) map.removeLayer(tileLayer);
+  // Standard OpenStreetMap Tile Server
+  tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors | Gujarat Police SENTINEL 2026'
+  }).addTo(map);
+}
+updateMapTiles();
+
+let cameraMarkers = {};
+let routePolyline = null;
+let routeMarkers = [];
+let allCameras = [];
+let activeFilters = new Set();
+
+// ===== DEPARTMENT COLOR MAP =====
+function deptColor(d){
+  if(d.includes('Police')) return 'var(--badge-police)';
+  if(d.includes('RTO')) return 'var(--badge-rto)';
+  if(d.includes('Municipal')) return 'var(--badge-muni)';
+  if(d.includes('Civil')) return 'var(--badge-civil)';
+  return 'var(--badge-pvt)';
+}
+function deptBadgeClass(d){
+  if(d.includes('Police')) return 'badge-police';
+  if(d.includes('RTO')) return 'badge-rto';
+  if(d.includes('Municipal')) return 'badge-muni';
+  if(d.includes('Civil')) return 'badge-civil';
+  return 'badge-pvt';
+}
+
+// ===== PAGE NAVIGATION =====
+function switchPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  event.target.classList.add('active');
+  if(page==='registry') loadRegistry();
+  if(page==='analytics') loadEvents();
+  if(page==='watchlist') loadWatchlist();
+  if(page==='dashboard') setTimeout(()=>map.invalidateSize(),100);
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ===== LOAD STATS =====
+async function loadStats(){
+  const res = await fetch('/api/stats');
+  const d = await res.json();
+  document.getElementById('stat-cams').textContent = d.total_cameras;
+  document.getElementById('stat-online').textContent = d.online_cameras;
+  document.getElementById('stat-detections').textContent = d.total_detections;
+  document.getElementById('stat-alerts').textContent = d.watchlist_hits;
+  // Department filters
+  const box = document.getElementById('dept-filters');
+  box.innerHTML = '<span class="dept-pill active" onclick="filterDept(this,\'ALL\')">All</span>';
+  Object.keys(d.departments).forEach(dept=>{
+    box.innerHTML += `<span class="dept-pill" onclick="filterDept(this,'${dept}')">${dept} (${d.departments[dept]})</span>`;
+  });
+}
+
+// ===== LOAD CAMERAS =====
+async function loadCameras(){
+  const res = await fetch('/api/cameras');
+  const d = await res.json();
+  allCameras = d.cameras;
+  renderCamerasOnMap(allCameras);
+}
+
+function renderCamerasOnMap(cameras){
+  Object.values(cameraMarkers).forEach(m=>map.removeLayer(m));
+  cameraMarkers = {};
+  cameras.forEach(cam=>{
+    const color = cam.department.includes('Police')?'#3b82f6':
+                  cam.department.includes('RTO')?'#f59e0b':
+                  cam.department.includes('Municipal')?'#10b981':
+                  cam.department.includes('Civil')?'#8b5cf6':'#6b7280';
+    const marker = L.circleMarker([cam.lat, cam.lon],{
+      radius:5, fillColor:color, color:'#fff', weight:1.5, fillOpacity:0.85
+    }).addTo(map);
+    const safeName = cam.name.replace(/'/g, "\\'");
+    marker.bindPopup(`<div>
+      <b style="font-size:13px">${cam.name}</b><br>
+      <span style="color:var(--text-tertiary)">ID: ${cam.id}</span><br>
+      <span class="badge ${deptBadgeClass(cam.department)}">${cam.department}</span><br>
+      <span style="font-size:11px">Type: ${cam.type||'IP'} &bull; Vendor: ${cam.vendor||'—'}</span><br>
+      <span style="color:var(--green);font-weight:600">● ONLINE</span><br>
+      <button class="btn btn-primary btn-sm btn-block" style="margin-top:8px" onclick="watchCameraStream('${cam.id}', '${safeName}', '${cam.department}')">▶ Watch Live Stream</button>
+    </div>`);
+    cameraMarkers[cam.id] = marker;
+  });
+}
+
+function filterDept(el, dept){
+  document.querySelectorAll('#dept-filters .dept-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  if(dept==='ALL'){
+    renderCamerasOnMap(allCameras);
+  } else {
+    renderCamerasOnMap(allCameras.filter(c=>c.department===dept));
+  }
+}
+
+// ===== TRACE VEHICLE =====
+async function traceVehicle(){
+  const plate = document.getElementById('plate-input').value.trim();
+  if(!plate) return;
+  const res = await fetch(`/api/route/${plate}`);
+  const d = await res.json();
+  if(routePolyline) map.removeLayer(routePolyline);
+  routeMarkers.forEach(m=>map.removeLayer(m));
+  routeMarkers = [];
+  const timeline = document.getElementById('route-timeline');
+  if(!d.route||d.route.length===0){
+    timeline.innerHTML='<div style="font-size:12px;color:var(--text-tertiary);padding:8px">No sightings found for '+plate+'</div>';
+    return;
+  }
+  const latlngs = [];
+  let html = '';
+  d.route.forEach((s,i)=>{
+    latlngs.push([s.lat, s.lon]);
+    const m = L.circleMarker([s.lat,s.lon],{radius:8,fillColor:'#ef4444',color:'#fff',weight:2,fillOpacity:0.9}).addTo(map);
+    m.bindPopup(`<b>Waypoint #${i+1}</b><br>${s.name}<br>${new Date(s.timestamp).toLocaleString()}<br>Confidence: ${(s.confidence*100).toFixed(1)}%`);
+    if(i===d.route.length-1) m.openPopup();
+    routeMarkers.push(m);
+    html += `<div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-body">
+        <div class="loc">${i+1}. ${s.name}</div>
+        <div class="time">${new Date(s.timestamp).toLocaleString()}</div>
+        <div class="conf">Confidence: ${(s.confidence*100).toFixed(1)}%</div>
+      </div>
+    </div>`;
+  });
+  timeline.innerHTML = html;
+  routePolyline = L.polyline(latlngs,{color:'#ef4444',weight:3,dashArray:'8,6',opacity:0.85}).addTo(map);
+  map.fitBounds(routePolyline.getBounds(),{padding:[60,60]});
+  // Switch to dashboard if not already
+  if(!document.getElementById('page-dashboard').classList.contains('active')){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('page-dashboard').classList.add('active');
+    document.querySelector('.nav-tab').classList.add('active');
+    setTimeout(()=>map.invalidateSize(),100);
+  }
+}
+function quickTrace(p){document.getElementById('plate-input').value=p;traceVehicle();}
+
+// ===== LIVE CAMERA MODAL VIEWER =====
+function watchCameraStream(id, name, dept){
+  document.getElementById('modal-cam-name').textContent = name + ' (' + id + ')';
+  document.getElementById('modal-cam-meta').textContent = 'Department: ' + dept + ' | Protocol: RTSP over TCP | M4 Hardware Accel';
+  document.getElementById('modal-cam-img').src = '/video_feed/' + id;
+  openModal('watch-camera-modal');
+}
+function closeCameraModal(){
+  document.getElementById('modal-cam-img').src = '';
+  closeModal('watch-camera-modal');
+}
+
+// ===== REGISTRY TABLE =====
+async function loadRegistry(){
+  const res = await fetch('/api/cameras');
+  const d = await res.json();
+  const tbody = document.getElementById('registry-tbody');
+  tbody.innerHTML = d.cameras.map(c=>`<tr>
+    <td style="font-weight:600;font-family:monospace">${c.id}</td>
+    <td>${c.name}</td>
+    <td><span class="badge ${deptBadgeClass(c.department)}">${c.department}</span></td>
+    <td>${c.type||'IP'}</td><td>${c.vendor||'—'}</td>
+    <td>${c.storage||'Local NVR'}</td><td>${c.retention||'7 days'}</td>
+    <td style="font-family:monospace;font-size:11px">${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</td>
+    <td><span class="badge badge-online">Online</span></td>
+    <td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('${c.id}', '${c.name.replace(/'/g, "\\'")}', '${c.department}')">▶ Watch</button></td>
+  </tr>`).join('');
+}
+function filterRegistry(){
+  const q = document.getElementById('registry-search').value.toLowerCase();
+  document.querySelectorAll('#registry-tbody tr').forEach(tr=>{
+    tr.style.display = tr.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+// ===== EVENTS TABLE =====
+async function loadEvents(){
+  const plate = document.getElementById('event-plate-search')?.value||'';
+  const res = await fetch(`/api/events?plate=${plate}&limit=200`);
+  const d = await res.json();
+  const tbody = document.getElementById('events-tbody');
+  tbody.innerHTML = d.events.map(e=>`<tr>
+    <td>${new Date(e.timestamp).toLocaleString()}</td>
+    <td style="font-weight:700;font-family:monospace">${e.plate_number}</td>
+    <td style="font-family:monospace;font-size:11px">${e.camera_id}</td>
+    <td>${e.camera_name}</td>
+    <td>${(e.confidence*100).toFixed(1)}%</td>
+    <td>${e.watchlist_status!=='NONE'?`<span class="badge badge-alert">${e.watchlist_status}</span>`:'-'}</td>
+    <td style="font-size:11px">${e.watchlist_reason||'-'}</td>
+  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-tertiary)">No events recorded yet. Start the AI engine to generate detections.</td></tr>';
+}
+
+// ===== WATCHLIST TABLE =====
+async function loadWatchlist(){
+  const res = await fetch('/api/watchlist');
+  const d = await res.json();
+  const tbody = document.getElementById('watchlist-tbody');
+  tbody.innerHTML = d.watchlist.map(w=>{
+    const sevColor = w.severity==='CRITICAL'?'badge-alert':w.severity==='HIGH'?'badge-alert':'';
+    return `<tr>
+      <td style="font-weight:700;font-family:monospace;font-size:14px">${w.plate_number}</td>
+      <td>${w.reason}</td>
+      <td><span class="badge ${sevColor}" style="${w.severity==='LOW'?'background:var(--yellow-bg);color:var(--yellow)':''}">${w.severity}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== ADD CAMERA =====
+async function addCamera(){
+  const data = {
+    id: document.getElementById('cam-id').value,
+    name: document.getElementById('cam-name').value,
+    department: document.getElementById('cam-dept').value,
+    lat: document.getElementById('cam-lat').value,
+    lon: document.getElementById('cam-lon').value,
+    rtsp_url: document.getElementById('cam-rtsp').value
+  };
+  await fetch('/api/cameras/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeModal('add-camera-modal');
+  loadCameras(); loadStats(); loadRegistry();
+}
+
+// ===== ADD WATCHLIST =====
+async function addWatchlist(){
+  const data = {
+    plate_number: document.getElementById('wl-plate').value,
+    reason: document.getElementById('wl-reason').value,
+    severity: document.getElementById('wl-severity').value
+  };
+  await fetch('/api/watchlist/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  closeModal('add-watchlist-modal');
+  loadWatchlist();
+}
+
+// ===== WEBSOCKET ALERTS =====
+const ws = new WebSocket(`ws://${location.host}/ws`);
+ws.onmessage = function(e){
+  const d = JSON.parse(e.data);
+  const box = document.getElementById('alerts-box');
+  const el = document.createElement('div');
+  el.className = 'alert-item';
+  el.innerHTML = `<div class="top"><span>🚨 ${d.severity}</span><span style="font-family:monospace">${d.plate}</span></div>
+    <div class="desc">${d.reason}</div>
+    <div class="meta"><span>${d.cam_id}</span><span>${new Date(d.time).toLocaleTimeString()}</span></div>`;
+  box.prepend(el);
+  // Update stats
+  const cur = parseInt(document.getElementById('stat-alerts').textContent)||0;
+  document.getElementById('stat-alerts').textContent = cur+1;
+  const curD = parseInt(document.getElementById('stat-detections').textContent)||0;
+  document.getElementById('stat-detections').textContent = curD+1;
+};
+
+// ===== INIT =====
+loadStats();
+loadCameras();
+setTimeout(()=>traceVehicle(), 800);
+setInterval(loadStats, 15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# ==============================================================================
+# NVIDIA TrafficCamNet Primary Inference Configuration
+# Architecture: DetectNet_v2 + ResNet18
+# Classes: 0: Car, 1: Two-Wheeler, 2: Person, 3: Road Sign
+# ==============================================================================
+
+[property]
+gpu-id=0
+net-scale-factor=0.00392156862745098
+tlt-model-key=nvidia_tlt
+tlt-encoded-model=models/trafficcamnet.etlt
+model-engine-file=models/trafficcamnet.etlt_b4_gpu0_fp16.engine
+labelfile-path=labels_trafficcamnet.txt
+batch-size=4
+process-mode=1
+model-color-format=0
+network-mode=2
+num-detected-classes=4
+interval=0
+gie-unique-id=1
+output-blob-names=output_cov/Sigmoid;output_bbox/BiasAdd
+
+[class-attrs-all]
+pre-cluster-threshold=0.35
+topk=50
+nms-iou-threshold=0.5

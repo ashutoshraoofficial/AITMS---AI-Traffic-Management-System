@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+websockets
+opencv-python-headless
+ultralytics
+easyocr
+torch
+torchvision
+torchaudio
+jinja2
+python-multipart
+sqlalchemy

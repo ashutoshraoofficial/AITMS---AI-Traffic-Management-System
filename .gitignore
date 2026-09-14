@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs & temp files
+*.log
+*.tmp
+
+# Large video test files
+*.mp4
+*.mkv
+*.avi
+
+# Training datasets / cache in models
+models/results/
+

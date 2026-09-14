@@ -1,0 +1,23 @@
+# ==============================================================================
+# NVIDIA LPRNet Secondary Inference Configuration
+# Architecture: ResNet Backbone + Connectionist Temporal Classification (CTC)
+# Input: Cropped Vehicle Bounding Box
+# ==============================================================================
+
+[property]
+gpu-id=0
+net-scale-factor=0.00392156862745098
+tlt-model-key=nvidia_tlt
+tlt-encoded-model=models/lprnet.etlt
+model-engine-file=models/lprnet.etlt_b16_gpu0_fp16.engine
+labelfile-path=characters_list_indian_plates.txt
+batch-size=16
+process-mode=2
+model-color-format=0
+network-mode=2
+gie-unique-id=2
+operate-on-gie-id=1
+operate-on-class-ids=0;1
+input-object-min-width=64
+input-object-min-height=32
+output-blob-names=tf_op_layer_ctc_greedy_decoder/transpose
