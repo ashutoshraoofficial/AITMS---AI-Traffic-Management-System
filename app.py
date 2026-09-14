@@ -249,9 +249,9 @@ async def frame_stream_generator(camera_id: str):
     
     # Priority search for video files
     video_candidates = [
-        "Licence Plate Camera Illustration Video - Unik CCTV (1080p, h264).mp4",
-        "sample_traffic.mp4"
-    ] + glob.glob("*.mp4")
+        "sample_traffic.mp4",
+        "Licence Plate Camera Illustration Video - Unik CCTV (1080p, h264).mp4"
+    ] + glob.glob("*.mp4") + glob.glob("Sample Videos/*.mp4")
     
     video_source = None
     for vc in video_candidates:

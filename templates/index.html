@@ -118,7 +118,8 @@ a{color:var(--accent);text-decoration:none}
 .alert-item .meta{font-size:10px;color:var(--text-tertiary);display:flex;justify-content:space-between}
 
 /* ===== VIDEO FEED BOXES ===== */
-.feed-box{min-width:300px;width:300px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.feed-box{min-width:300px;width:300px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform var(--transition);box-shadow:var(--shadow-sm)}
+.feed-box:hover{transform:translateY(-2px);border-color:var(--accent)}
 .feed-box .feed-header{background:var(--bg-surface-alt);padding:6px 10px;font-size:10px;font-weight:700;color:var(--text-secondary);display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
 .feed-box .feed-header .live{color:var(--green)}
 .feed-box img{width:100%;flex:1;object-fit:cover;background:#000;min-height:0}
@@ -240,24 +241,24 @@ tr:hover td{background:var(--bg-surface-alt)}
     <div class="page active" id="page-dashboard">
       <div class="map-area"><div id="map"></div></div>
       <div class="video-wall" id="video-wall">
-        <div class="feed-box">
-          <div class="feed-header"><span>SG Highway — Pakwan</span><span class="live">● LIVE</span></div>
+        <div class="feed-box" onclick="viewCamera('GJ-AHM-001', 'SG Highway — Pakwan', 'Home (Police)')" title="Click to Expand">
+          <div class="feed-header"><span>SG Highway — Pakwan</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
           <img src="/video_feed/GJ-AHM-001" alt="Feed 1">
         </div>
-        <div class="feed-box">
-          <div class="feed-header"><span>Income Tax Circle</span><span class="live">● LIVE</span></div>
+        <div class="feed-box" onclick="viewCamera('GJ-AHM-003', 'Income Tax Circle', 'Home (Police)')" title="Click to Expand">
+          <div class="feed-header"><span>Income Tax Circle</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
           <img src="/video_feed/GJ-AHM-003" alt="Feed 2">
         </div>
-        <div class="feed-box">
-          <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><span class="live">● LIVE</span></div>
+        <div class="feed-box" onclick="viewCamera('GJ-GNR-011', 'Chh-0 Circle, Gandhinagar', 'Home (Police)')" title="Click to Expand">
+          <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
           <img src="/video_feed/GJ-GNR-011" alt="Feed 3">
         </div>
-        <div class="feed-box">
-          <div class="feed-header"><span>GIFT City Toll</span><span class="live">● LIVE</span></div>
+        <div class="feed-box" onclick="viewCamera('GJ-GNR-013', 'GIFT City Toll', 'Home (Police)')" title="Click to Expand">
+          <div class="feed-header"><span>GIFT City Toll</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
           <img src="/video_feed/GJ-GNR-013" alt="Feed 4">
         </div>
-        <div class="feed-box">
-          <div class="feed-header"><span>Subhash Bridge RTO</span><span class="live">● LIVE</span></div>
+        <div class="feed-box" onclick="viewCamera('GJ-AHM-007', 'Subhash Bridge RTO', 'RTO')" title="Click to Expand">
+          <div class="feed-header"><span>Subhash Bridge RTO</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
           <img src="/video_feed/GJ-AHM-007" alt="Feed 5">
         </div>
       </div>
