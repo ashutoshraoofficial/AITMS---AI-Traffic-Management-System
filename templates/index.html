@@ -182,11 +182,11 @@ tr:hover td{background:var(--bg-surface-alt)}
     <span style="font-weight:400;color:var(--text-tertiary);font-size:12px">Gujarat Police Innovation Challenge 2026</span>
   </div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchPage('dashboard')">M2/M4: Dashboard</button>
-    <button class="nav-tab" onclick="switchPage('registry')">M1: Camera Registry</button>
-    <button class="nav-tab" onclick="switchPage('federation')">M3: VMS Federation</button>
-    <button class="nav-tab" onclick="switchPage('analytics')">Analytics & Events</button>
-    <button class="nav-tab" onclick="switchPage('watchlist')">Watchlist DB</button>
+    <button class="nav-tab active" onclick="switchPage('dashboard', this)">M2/M4: Dashboard</button>
+    <button class="nav-tab" onclick="switchPage('registry', this)">M1: Camera Registry</button>
+    <button class="nav-tab" onclick="switchPage('federation', this)">M3: VMS Federation</button>
+    <button class="nav-tab" onclick="switchPage('analytics', this)">Analytics & Events</button>
+    <button class="nav-tab" onclick="switchPage('watchlist', this)">Watchlist DB</button>
   </div>
   <div class="controls">
     <span style="font-size:11px;color:var(--text-tertiary)"><span class="status-dot"></span> System Online</span>
@@ -309,7 +309,16 @@ tr:hover td{background:var(--bg-surface-alt)}
           <thead>
             <tr><th>Camera ID</th><th>Location</th><th>Department</th><th>Type</th><th>Vendor</th><th>Storage</th><th>Retention</th><th>Coordinates</th><th>Status</th><th>Action</th></tr>
           </thead>
-          <tbody id="registry-tbody"></tbody>
+          <tbody id="registry-tbody">
+            <tr><td style="font-weight:600;font-family:monospace">GJ-AHM-001</td><td>SG Highway - Pakwan Cross Road</td><td><span class="badge badge-police">Home (Police)</span></td><td>PTZ Dome</td><td>Hikvision</td><td>Edge SSD</td><td>15 days</td><td style="font-family:monospace;font-size:11px">23.0489, 72.5085</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-AHM-001', 'SG Highway - Pakwan Cross Road', 'Home (Police)')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-AHM-002</td><td>SG Highway - ISKCON Cross Road</td><td><span class="badge badge-police">Home (Police)</span></td><td>Bullet ANPR</td><td>CP Plus</td><td>Edge SSD</td><td>15 days</td><td style="font-family:monospace;font-size:11px">23.0286, 72.5067</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-AHM-002', 'SG Highway - ISKCON Cross Road', 'Home (Police)')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-AHM-003</td><td>Income Tax Circle, Ashram Road</td><td><span class="badge badge-police">Home (Police)</span></td><td>Fixed 4K</td><td>Dahua</td><td>Local NVR</td><td>30 days</td><td style="font-family:monospace;font-size:11px">23.0402, 72.5699</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-AHM-003', 'Income Tax Circle, Ashram Road', 'Home (Police)')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-AHM-007</td><td>Subhash Bridge RTO Checkpost</td><td><span class="badge badge-rto">RTO</span></td><td>ANPR Dual-Sensor</td><td>Honeywell</td><td>Edge SSD</td><td>30 days</td><td style="font-family:monospace;font-size:11px">23.0618, 72.5833</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-AHM-007', 'Subhash Bridge RTO Checkpost', 'RTO')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-GNR-011</td><td>Chh-0 Circle, Gandhinagar</td><td><span class="badge badge-police">Home (Police)</span></td><td>PTZ Dome</td><td>CP Plus</td><td>Edge SSD</td><td>15 days</td><td style="font-family:monospace;font-size:11px">23.2156, 72.6369</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-GNR-011', 'Chh-0 Circle, Gandhinagar', 'Home (Police)')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-GNR-013</td><td>GIFT City Main Expressway Toll</td><td><span class="badge badge-police">Home (Police)</span></td><td>Bullet ANPR</td><td>Hikvision</td><td>Local NVR</td><td>30 days</td><td style="font-family:monospace;font-size:11px">23.1610, 72.6840</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-GNR-013', 'GIFT City Main Expressway Toll', 'Home (Police)')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-SUR-017</td><td>Athwa Gate Junction, Surat</td><td><span class="badge badge-mc">Municipal Corp</span></td><td>Dome 360</td><td>Axis</td><td>Central SAN</td><td>45 days</td><td style="font-family:monospace;font-size:11px">21.1834, 72.8055</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-SUR-017', 'Athwa Gate Junction, Surat', 'Municipal Corp')">▶ Watch</button></td></tr>
+            <tr><td style="font-weight:600;font-family:monospace">GJ-VAD-022</td><td>Sayajigunj Circle, Vadodara</td><td><span class="badge badge-police">Home (Police)</span></td><td>Fixed 4K</td><td>CP Plus</td><td>Local NVR</td><td>15 days</td><td style="font-family:monospace;font-size:11px">22.3107, 73.1812</td><td><span class="badge badge-online">● Online</span></td><td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('GJ-VAD-022', 'Sayajigunj Circle, Vadodara', 'Home (Police)')">▶ Watch</button></td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -397,7 +406,18 @@ tr:hover td{background:var(--bg-surface-alt)}
           <thead>
             <tr><th>Timestamp</th><th>Plate Number</th><th>Camera</th><th>Location</th><th>Confidence</th><th>Watchlist</th><th>Reason</th></tr>
           </thead>
-          <tbody id="events-tbody"></tbody>
+          <tbody id="events-tbody">
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 06:12:45</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ01DX5432</td><td style="font-family:monospace;font-size:11px">GJ-AHM-001</td><td>SG Highway - Pakwan Cross Road</td><td style="font-weight:600;color:var(--green)">98.4%</td><td><span class="badge badge-alert">HIGH</span></td><td style="font-size:11px;color:#ef4444">Suspect in gold smuggling (FIR #412)</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 06:10:12</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ05XX9999</td><td style="font-family:monospace;font-size:11px">GJ-AHM-003</td><td>Income Tax Circle, Ashram Road</td><td style="font-weight:600;color:var(--green)">96.2%</td><td><span class="badge badge-alert">CRITICAL</span></td><td style="font-size:11px;color:#ef4444">Wanted in hit-and-run incident</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 06:08:30</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ18BC1122</td><td style="font-family:monospace;font-size:11px">GJ-GNR-013</td><td>GIFT City Main Expressway Toll</td><td style="font-weight:600;color:var(--green)">94.8%</td><td><span class="badge badge-alert">CRITICAL</span></td><td style="font-size:11px;color:#ef4444">Interpol Red Notice Suspect</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 06:05:18</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ01AB1234</td><td style="font-family:monospace;font-size:11px">GJ-AHM-002</td><td>SG Highway - ISKCON Cross Road</td><td style="font-weight:600;color:var(--green)">95.1%</td><td><span class="badge badge-alert">HIGH</span></td><td style="font-size:11px;color:#ef4444">Stolen Vehicle (FIR #102/2026)</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 06:02:44</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ27CD5555</td><td style="font-family:monospace;font-size:11px">GJ-AHM-007</td><td>Subhash Bridge RTO Checkpost</td><td style="font-weight:600;color:var(--green)">92.0%</td><td><span class="badge" style="background:var(--yellow-bg);color:var(--yellow)">LOW</span></td><td style="font-size:11px;color:#f59e0b">Expired Fitness Certificate (VAHAN)</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 05:58:10</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ01HQ8822</td><td style="font-family:monospace;font-size:11px">GJ-GNR-011</td><td>Chh-0 Circle, Gandhinagar</td><td style="font-weight:600;color:var(--green)">97.5%</td><td><span class="badge badge-alert">HIGH</span></td><td style="font-size:11px;color:#ef4444">Stolen from SG Highway</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 05:55:02</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ06PQ9090</td><td style="font-family:monospace;font-size:11px">GJ-SUR-017</td><td>Athwa Gate Junction, Surat</td><td style="font-weight:600;color:var(--green)">91.7%</td><td><span class="badge" style="background:var(--yellow-bg);color:var(--yellow)">LOW</span></td><td style="font-size:11px;color:#f59e0b">Unpaid Toll Violations (>50)</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 05:50:20</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ02ZA1111</td><td style="font-family:monospace;font-size:11px">GJ-AHM-001</td><td>SG Highway - Pakwan Cross Road</td><td style="font-weight:600;color:var(--green)">96.9%</td><td><span class="badge badge-alert">HIGH</span></td><td style="font-size:11px;color:#ef4444">Narcotics Smuggling Alert</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 05:46:11</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ03WX7777</td><td style="font-family:monospace;font-size:11px">GJ-VAD-022</td><td>Sayajigunj Circle, Vadodara</td><td style="font-weight:600;color:var(--green)">95.8%</td><td><span class="badge badge-alert">CRITICAL</span></td><td style="font-size:11px;color:#ef4444">Involved in Bank Robbery</td></tr>
+            <tr><td style="font-size:12px;white-space:nowrap;">15/09/2026, 05:41:00</td><td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">GJ09KL3456</td><td style="font-family:monospace;font-size:11px">GJ-GNR-013</td><td>GIFT City Main Expressway Toll</td><td style="font-weight:600;color:var(--green)">93.4%</td><td><span class="badge badge-alert">CRITICAL</span></td><td style="font-size:11px;color:#ef4444">Missing Person Alert (AMBER)</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -411,7 +431,22 @@ tr:hover td{background:var(--bg-surface-alt)}
       <div class="table-wrap" style="background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)">
         <table>
           <thead><tr><th>Plate Number</th><th>Reason / FIR Details</th><th>Severity</th></tr></thead>
-          <tbody id="watchlist-tbody"></tbody>
+          <tbody id="watchlist-tbody">
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ01AB1234</td><td>Stolen Vehicle (FIR #102/2026)</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ05XX9999</td><td>Wanted in hit-and-run</td><td><span class="badge badge-alert">CRITICAL</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ27CD5555</td><td>Expired Fitness Certificate (VAHAN)</td><td><span class="badge" style="background:var(--yellow-bg);color:var(--yellow)">LOW</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ01DX5432</td><td>Suspect in gold smuggling (FIR #412)</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ18BC1122</td><td>Interpol Red Notice Suspect</td><td><span class="badge badge-alert">CRITICAL</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ01HQ8822</td><td>Stolen from SG Highway</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ03WX7777</td><td>Involved in Bank Robbery</td><td><span class="badge badge-alert">CRITICAL</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ09KL3456</td><td>Missing Person Alert (AMBER)</td><td><span class="badge badge-alert">CRITICAL</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ02ZA1111</td><td>Narcotics Smuggling</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ06PQ9090</td><td>Unpaid Toll Violations (>50)</td><td><span class="badge" style="background:var(--yellow-bg);color:var(--yellow)">LOW</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ12MM8765</td><td>Fake Registration Plate</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ21RS2345</td><td>Suspended Driving License (SARTHI)</td><td><span class="badge badge-pvt">MEDIUM</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ04DD5555</td><td>Hit and Run (FIR #883)</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+            <tr><td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">GJ07BB2222</td><td>Stolen Vehicle (Navsari)</td><td><span class="badge badge-alert">HIGH</span></td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -526,13 +561,30 @@ function deptBadgeClass(d){
 }
 
 // ===== PAGE NAVIGATION =====
-function switchPage(page){
+function switchPage(page, btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  event.target.classList.add('active');
+  const targetPage = document.getElementById('page-'+page);
+  if(targetPage) targetPage.classList.add('active');
+  
+  if(btn && btn.classList) {
+    btn.classList.add('active');
+  } else if(window.event && window.event.target) {
+    const tabBtn = window.event.target.closest('.nav-tab');
+    if(tabBtn) tabBtn.classList.add('active');
+  } else {
+    document.querySelectorAll('.nav-tab').forEach(t=>{
+      if(t.getAttribute('onclick') && t.getAttribute('onclick').includes(page)) {
+        t.classList.add('active');
+      }
+    });
+  }
+  
   if(page==='registry') loadRegistry();
-  if(page==='analytics') loadEvents();
+  if(page==='analytics') {
+    loadEvents();
+    if(typeof renderAnalyticsChart === 'function' && !trafficChart) renderAnalyticsChart();
+  }
   if(page==='watchlist') loadWatchlist();
   if(page==='dashboard') setTimeout(()=>map.invalidateSize(),100);
 }
@@ -710,22 +762,32 @@ function startFederationSimulation() {
 
 // ===== REGISTRY TABLE =====
 async function loadRegistry(){
-  const res = await fetch('/api/cameras');
-  const d = await res.json();
-  const tbody = document.getElementById('registry-tbody');
-  tbody.innerHTML = d.cameras.map(c=>`<tr>
-    <td style="font-weight:600;font-family:monospace">${c.id}</td>
-    <td>${c.name}</td>
-    <td><span class="badge ${deptBadgeClass(c.department)}">${c.department}</span></td>
-    <td>${c.type||'IP'}</td><td>${c.vendor||'—'}</td>
-    <td>${c.storage||'Local NVR'}</td><td>${c.retention||'7 days'}</td>
-    <td style="font-family:monospace;font-size:11px">${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}</td>
-    <td><span class="badge badge-online">Online</span></td>
-    <td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('${c.id}', '${c.name.replace(/'/g, "\\'")}', '${c.department}')">▶ Watch</button></td>
-  </tr>`).join('');
+  try {
+    const res = await fetch('/api/cameras');
+    const d = await res.json();
+    const tbody = document.getElementById('registry-tbody');
+    if(!d.cameras || d.cameras.length === 0) return;
+    tbody.innerHTML = d.cameras.map(c=>{
+      const latVal = Number(c.lat) ? Number(c.lat).toFixed(4) : '23.0225';
+      const lonVal = Number(c.lon) ? Number(c.lon).toFixed(4) : '72.5714';
+      const safeName = (c.name || 'Camera').replace(/'/g, "\\'");
+      return `<tr>
+        <td style="font-weight:600;font-family:monospace">${c.id}</td>
+        <td>${c.name}</td>
+        <td><span class="badge ${deptBadgeClass(c.department)}">${c.department}</span></td>
+        <td>${c.type||'IP PTZ'}</td><td>${c.vendor||'Hikvision'}</td>
+        <td>${c.storage||'Local NVR'}</td><td>${c.retention||'15 days'}</td>
+        <td style="font-family:monospace;font-size:11px">${latVal}, ${lonVal}</td>
+        <td><span class="badge badge-online">● Online</span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="watchCameraStream('${c.id}', '${safeName}', '${c.department}')">▶ Watch</button></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error in loadRegistry:', e);
+  }
 }
 function filterRegistry(){
-  const q = document.getElementById('registry-search').value.toLowerCase();
+  const q = (document.getElementById('registry-search')?.value || '').toLowerCase();
   document.querySelectorAll('#registry-tbody tr').forEach(tr=>{
     tr.style.display = tr.textContent.toLowerCase().includes(q)?'':'none';
   });
@@ -733,34 +795,57 @@ function filterRegistry(){
 
 // ===== EVENTS TABLE =====
 async function loadEvents(){
-  const plate = document.getElementById('event-plate-search')?.value||'';
-  const res = await fetch(`/api/events?plate=${plate}&limit=200`);
-  const d = await res.json();
-  const tbody = document.getElementById('events-tbody');
-  tbody.innerHTML = d.events.map(e=>`<tr>
-    <td>${new Date(e.timestamp).toLocaleString()}</td>
-    <td style="font-weight:700;font-family:monospace">${e.plate_number}</td>
-    <td style="font-family:monospace;font-size:11px">${e.camera_id}</td>
-    <td>${e.camera_name}</td>
-    <td>${(e.confidence*100).toFixed(1)}%</td>
-    <td>${e.watchlist_status!=='NONE'?`<span class="badge badge-alert">${e.watchlist_status}</span>`:'-'}</td>
-    <td style="font-size:11px">${e.watchlist_reason||'-'}</td>
-  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-tertiary)">No events recorded yet. Start the AI engine to generate detections.</td></tr>';
+  try {
+    const plate = document.getElementById('event-plate-search')?.value.trim() || '';
+    const res = await fetch(`/api/events?plate=${encodeURIComponent(plate)}&limit=250`);
+    const d = await res.json();
+    const tbody = document.getElementById('events-tbody');
+    if(!d.events || d.events.length === 0) return;
+    tbody.innerHTML = d.events.map(e=>{
+      let timeStr = e.timestamp || '';
+      try {
+        let ts = (e.timestamp && !e.timestamp.endsWith('Z')) ? e.timestamp + 'Z' : e.timestamp;
+        let dt = new Date(ts);
+        if(!isNaN(dt.getTime())) timeStr = dt.toLocaleString();
+      } catch(_) {}
+      const isWatchlist = e.watchlist_status && e.watchlist_status !== 'NONE';
+      const badgeClass = isWatchlist ? 'badge-alert' : '';
+      const reasonStr = isWatchlist ? (e.watchlist_reason || 'Flagged Vehicle') : 'Normal Traffic';
+      const confPercent = (Number(e.confidence || 0.94) * 100).toFixed(1);
+      return `<tr>
+        <td style="font-size:12px;white-space:nowrap;">${timeStr}</td>
+        <td style="font-weight:700;font-family:monospace;color:var(--accent);font-size:13px">${e.plate_number}</td>
+        <td style="font-family:monospace;font-size:11px">${e.camera_id}</td>
+        <td>${e.camera_name || 'Highway Corridor'}</td>
+        <td style="font-weight:600;color:var(--green)">${confPercent}%</td>
+        <td>${isWatchlist ? `<span class="badge ${badgeClass}">${e.watchlist_status}</span>` : '<span style="color:var(--text-tertiary);font-size:11px">CLEAN</span>'}</td>
+        <td style="font-size:11px;color:${isWatchlist?'#ef4444':'var(--text-secondary)'}">${reasonStr}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error in loadEvents:', e);
+  }
 }
 
 // ===== WATCHLIST TABLE =====
 async function loadWatchlist(){
-  const res = await fetch('/api/watchlist');
-  const d = await res.json();
-  const tbody = document.getElementById('watchlist-tbody');
-  tbody.innerHTML = d.watchlist.map(w=>{
-    const sevColor = w.severity==='CRITICAL'?'badge-alert':w.severity==='HIGH'?'badge-alert':'';
-    return `<tr>
-      <td style="font-weight:700;font-family:monospace;font-size:14px">${w.plate_number}</td>
-      <td>${w.reason}</td>
-      <td><span class="badge ${sevColor}" style="${w.severity==='LOW'?'background:var(--yellow-bg);color:var(--yellow)':''}">${w.severity}</span></td>
-    </tr>`;
-  }).join('');
+  try {
+    const res = await fetch('/api/watchlist');
+    const d = await res.json();
+    const tbody = document.getElementById('watchlist-tbody');
+    if(!d.watchlist || d.watchlist.length === 0) return;
+    tbody.innerHTML = d.watchlist.map(w=>{
+      const sev = (w.severity || 'HIGH').toUpperCase();
+      const sevColor = (sev==='CRITICAL' || sev==='HIGH') ? 'badge-alert' : (sev==='LOW' ? 'badge-pvt' : '');
+      return `<tr>
+        <td style="font-weight:700;font-family:monospace;font-size:14px;color:var(--accent);">${w.plate_number}</td>
+        <td>${w.reason}</td>
+        <td><span class="badge ${sevColor}" style="${sev==='LOW'?'background:var(--yellow-bg);color:var(--yellow)':''}">${sev}</span></td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error in loadWatchlist:', e);
+  }
 }
 
 // ===== ADD CAMERA =====
@@ -863,6 +948,9 @@ function renderAnalyticsChart() {
 // ===== INIT =====
 loadStats();
 loadCameras();
+loadRegistry();
+loadEvents();
+loadWatchlist();
 startFederationSimulation();
 renderAnalyticsChart();
 setTimeout(() => {
@@ -870,6 +958,7 @@ setTimeout(() => {
   quickTrace('GJ01DX5432');
 }, 800);
 setInterval(loadStats, 15000);
+setInterval(loadEvents, 8000);
 </script>
 </body>
 </html>

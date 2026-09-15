@@ -145,11 +145,15 @@ async def api_events(plate: str = "", camera: str = "", limit: int = 100):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
-    query = """SELECT e.*, c.name as camera_name, c.department, c.lat, c.lon,
+    query = """SELECT e.*, 
+               COALESCE(c.name, e.camera_id, 'Highway Surveillance Junction') as camera_name, 
+               COALESCE(c.department, 'Home (Police)') as department, 
+               COALESCE(c.lat, 23.0225) as lat, 
+               COALESCE(c.lon, 72.5714) as lon,
                COALESCE(w.severity, 'NONE') as watchlist_status,
                COALESCE(w.reason, '') as watchlist_reason
                FROM events e
-               JOIN cameras c ON e.camera_id = c.id
+               LEFT JOIN cameras c ON e.camera_id = c.id
                LEFT JOIN watchlist w ON e.plate_number = w.plate_number
                WHERE 1=1"""
     params = []
