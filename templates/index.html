@@ -119,11 +119,19 @@ a{color:var(--accent);text-decoration:none}
 .alert-item .meta{font-size:10px;color:var(--text-tertiary);display:flex;justify-content:space-between}
 
 /* ===== VIDEO FEED BOXES ===== */
-.feed-box{min-width:480px;width:480px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform var(--transition);box-shadow:var(--shadow-sm)}
+.feed-box{min-width:480px;width:480px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform var(--transition);box-shadow:var(--shadow-sm);position:relative}
 .feed-box:hover{transform:translateY(-2px);border-color:var(--accent)}
-.feed-box .feed-header{background:var(--bg-surface-alt);padding:6px 10px;font-size:10px;font-weight:700;color:var(--text-secondary);display:flex;justify-content:space-between;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
-.feed-box .feed-header .live{color:var(--green)}
+.feed-box .feed-header{background:var(--bg-surface-alt);padding:8px 12px;font-size:11px;font-weight:700;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--border)}
+.feed-box .feed-header .live{color:var(--green);font-weight:700}
+.feed-box .expand-btn{background:var(--bg-input);border:1px solid var(--border);border-radius:4px;padding:3px 8px;font-size:10px;font-weight:700;color:var(--text-primary);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all var(--transition)}
+.feed-box .expand-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .feed-box img{width:100%;flex:1;object-fit:cover;background:#000;min-height:0}
+
+/* Fullscreen / Theater Expansion Mode */
+.feed-box.expanded{position:fixed!important;top:4vh!important;left:4vw!important;width:92vw!important;height:92vh!important;max-width:none!important;z-index:999999!important;box-shadow:0 0 0 100vmax rgba(0,0,0,0.85),0 25px 50px -12px rgba(0,0,0,0.5)!important;border-radius:12px!important;cursor:default!important;transform:none!important}
+.feed-box.expanded .feed-header{padding:12px 18px!important;font-size:13px!important;background:var(--bg-surface)!important}
+.feed-box.expanded .expand-btn{background:#ef4444!important;color:#fff!important;border-color:#ef4444!important;font-size:12px!important;padding:5px 12px!important}
+.feed-box.expanded img{height:calc(100% - 46px)!important;object-fit:contain!important;background:#000!important}
 
 /* ===== TABLE ===== */
 .table-wrap{overflow:auto;flex:1}
@@ -256,36 +264,60 @@ tr:hover td{background:var(--bg-surface-alt)}
           <span style="font-size: 11px; color: var(--text-tertiary);">Powered by NVIDIA TensorRT & Apple MPS</span>
         </div>
         <div class="video-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 12px;">
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-001', 'SG Highway — Pakwan', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>SG Highway — Pakwan</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-AHM-001" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-AHM-001')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>SG Highway — Pakwan</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-AHM-001" alt="Feed 1">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-003', 'Income Tax Circle', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>Income Tax Circle</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-AHM-003" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-AHM-003')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Income Tax Circle</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-AHM-003" alt="Feed 2">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-011', 'Chh-0 Circle, Gandhinagar', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>Chh-0 Circle, Gandhinagar</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-GNR-011" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-GNR-011')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Chh-0 Circle, Gandhinagar</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-GNR-011" alt="Feed 3">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-013', 'GIFT City Toll', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>GIFT City Toll</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-GNR-013" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-GNR-013')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>GIFT City Toll</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-GNR-013" alt="Feed 4">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-007', 'Subhash Bridge RTO', 'RTO')" title="Click to Expand">
-            <div class="feed-header"><span>Subhash Bridge RTO</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-AHM-007" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-AHM-007')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Subhash Bridge RTO</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-AHM-007" alt="Feed 5">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-021', 'Shivranjani Crossroads', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>Shivranjani Crossroads</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-AHM-021" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-AHM-021')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Shivranjani Crossroads</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-AHM-021" alt="Feed 6">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-GNR-044', 'Infocity Gate', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>Infocity Gate</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-GNR-044" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-GNR-044')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Infocity Gate</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-GNR-044" alt="Feed 7">
           </div>
-          <div class="feed-box" style="width:100%; min-width:auto;" onclick="watchCameraStream('GJ-AHM-099', 'Iskcon Flyover', 'Home (Police)')" title="Click to Expand">
-            <div class="feed-header"><span>Iskcon Flyover</span><div><span class="live" style="margin-right:8px">● LIVE</span><span style="cursor:pointer">⛶</span></div></div>
+          <div class="feed-box" id="feed-GJ-AHM-099" style="width:100%; min-width:auto;" onclick="toggleFeedExpand('GJ-AHM-099')" title="Click to Expand Fullscreen">
+            <div class="feed-header">
+              <span>Iskcon Flyover</span>
+              <div><span class="live" style="margin-right:8px">● LIVE</span><span class="expand-btn">⛶ EXPAND</span></div>
+            </div>
             <img src="/video_feed/GJ-AHM-099" alt="Feed 8">
           </div>
         </div>
@@ -725,8 +757,50 @@ async function traceVehicle(){
 }
 function quickTrace(p){document.getElementById('plate-input').value=p;traceVehicle();}
 
+// ===== EXPANDABLE CAMERA FEED CONTROLLER =====
+function toggleFeedExpand(id, ev){
+  if(ev) ev.stopPropagation();
+  const el = document.getElementById('feed-' + id);
+  if(!el) {
+    watchCameraStream(id, id, 'Home (Police)');
+    return;
+  }
+  const isCurrentlyExpanded = el.classList.contains('expanded');
+  
+  // Collapse all other feeds first
+  document.querySelectorAll('.feed-box.expanded').forEach(f => {
+    f.classList.remove('expanded');
+    const btn = f.querySelector('.expand-btn');
+    if(btn) btn.textContent = '⛶ EXPAND';
+  });
+  
+  if(!isCurrentlyExpanded) {
+    el.classList.add('expanded');
+    const btn = el.querySelector('.expand-btn');
+    if(btn) btn.textContent = '✕ CLOSE';
+  }
+}
+
+// Global escape key listener to close expanded camera
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') {
+    document.querySelectorAll('.feed-box.expanded').forEach(f => {
+      f.classList.remove('expanded');
+      const btn = f.querySelector('.expand-btn');
+      if(btn) btn.textContent = '⛶ EXPAND';
+    });
+    closeCameraModal();
+  }
+});
+
 // ===== LIVE CAMERA MODAL VIEWER =====
 function watchCameraStream(id, name, dept){
+  const gridFeed = document.getElementById('feed-' + id);
+  if(gridFeed) {
+    switchPage('dashboard');
+    setTimeout(() => toggleFeedExpand(id), 120);
+    return;
+  }
   document.getElementById('modal-cam-name').textContent = name + ' (' + id + ')';
   document.getElementById('modal-cam-meta').textContent = 'Department: ' + dept + ' | Protocol: RTSP over TCP | M4 Hardware Accel';
   document.getElementById('modal-cam-img').src = '/video_feed/' + id;
